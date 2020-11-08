@@ -14,6 +14,7 @@ from time import sleep
 # в будущем хочу вместо полуения инфы о товаре, получать фото продукции с артикулом в названии
 
 url = 'https://eldvor.ru/'
+link = 'https://eldvor.ru'
 headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 YaBrowser/20.9.1.110 Yowser/2.5 Safari/537.36'
@@ -86,26 +87,44 @@ for category_name, category_href in all_categories.items():
         print(f'Парсинг страницы {page} из {pages[-5]}...')
 
         # проходимся по каждой позиции на странице и собераем инфу
-        for item in items:
-            goods.append({
-                'name': item.find('div', class_='b-goods-item-link').get_text(strip=True),
-                'code_goods': item.find('div', class_='info-a').get_text(strip=True).split(' ')[-1],
-                'price': item.find('div', class_='b-goods-item-price clearfix').get_text(strip=True).split(' ')[:1:],
-                'brend': item.find('div', class_='b-goods-item-name').get_text(strip=True),
-                # 'link': domen + item.find('a', class_='snippet-link').get('href'),
-            })
+        # for item in items:
+        #     goods.append({
+        #         'name': item.find('div', class_='b-goods-item-link').get_text(strip=True),
+        #         'code_goods': item.find('div', class_='info-a').get_text(strip=True).split(' ')[-1],
+        #         'price': item.find('div', class_='b-goods-item-price clearfix').get_text(strip=True).split(' ')[:1:],
+        #         'brend': item.find('div', class_='b-goods-item-name').get_text(strip=True),
+        #         'link': domen + item.find('a', class_='snippet-link').get('href'),
+        #     })
+        for image in items:
+            image_link = image.find('a', class_='b-goods-item-img').get('href')
+            image_name = image.find('div', class_='info-a').get_text(strip=True).split(' ')[-1]
+            #print(f'{image_name}: {image_link}')
+            download_storage = requests.get(f'{link}{image_link}').text
+            #print(download_storage)
+            download_soup = BeautifulSoup(download_storage, 'lxml')
+            download_block = download_soup.find('div', class_='product__images')
+            result_link = download_block.find('a', class_='m-lightbox').get('href')
+            #print(result_link)
+
+            # получаем изображение
+            image_bytes = requests.get(f'{link}{result_link}').content
+
+            # сохраняем наше полученное изображение
+            with open(f'image/{image_name}.jpg', 'wb') as file:
+                file.write(image_bytes)
+            print(f'Изображение со страницы {page} с названием {image_name}" - успешно скачано!')
 
         # добавляем задержку между страницами
         sleep(random.randrange(1, 2))
         page += 1
 
-    print('Количество позиций: ' + str(len(goods)))
+    #print('Количество позиций: ' + str(len(goods)))
 
-    # сохраняем в ексель, с помощью пандас
-    df = pd.DataFrame(goods)
-    writer = ExcelWriter(f'data/{exel_count}_{category_name}_{file}')
-    df.to_excel(writer, 'Sheet1')
-    writer.save()
+    # # сохраняем в ексель, с помощью пандас
+    # df = pd.DataFrame(goods)
+    # writer = ExcelWriter(f'data/{exel_count}_{category_name}_{file}')
+    # df.to_excel(writer, 'Sheet1')
+    # writer.save()
 
     exel_count += 1
     category_count += 1
