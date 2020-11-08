@@ -11,6 +11,7 @@ from time import sleep
 
 # парсим сайт eldvor.ru все позиции с каждой страницы по разделам
 # полученные данные сохраяем в exel файл
+# в будущем хочу вместо полуения инфы о товаре, получать фото продукции с артикулом в названии
 
 url = 'https://eldvor.ru/'
 headers = {
@@ -18,7 +19,7 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 YaBrowser/20.9.1.110 Yowser/2.5 Safari/537.36'
 }
 domen = 'https://eldvor.ru'
-FILE = 'goods.xlsx'
+file = 'goods.xlsx'
 
 req = requests.get(url, headers=headers)
 src = req.text
@@ -102,7 +103,7 @@ for category_name, category_href in all_categories.items():
 
     # сохраняем в ексель, с помощью пандас
     df = pd.DataFrame(goods)
-    writer = ExcelWriter(f'data/{exel_count}_{category_name}_{FILE}')
+    writer = ExcelWriter(f'data/{exel_count}_{category_name}_{file}')
     df.to_excel(writer, 'Sheet1')
     writer.save()
 
