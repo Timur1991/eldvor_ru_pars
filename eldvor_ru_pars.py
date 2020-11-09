@@ -5,7 +5,9 @@ import pandas as pd
 from pandas import ExcelWriter
 import random
 from time import sleep
+import time
 import fake_useragent
+import os
 # pip install lxml
 # pip install openpyxl
 
@@ -69,7 +71,7 @@ for category_name, category_href in all_categories.items():
         #req = requests.get(url=category_href, headers=headers)
 
         # для определенного раздела
-        req = requests.get('https://eldvor.ru/electronics/aksessuary-k-smartfonam-planshetam/?av=v_nalichii&av=pod_zakaz', headers=headers)
+        req = requests.get('https://eldvor.ru/electronics/melkaya-bytovaya-tehnika/?av=v_nalichii&av=pod_zakaz', headers=headers)
         src = req.text
         # print(src)
         # with open(f'data/{category_count}_{category_name}.html', 'w', encoding='utf-8') as file:
@@ -91,11 +93,11 @@ for category_name, category_href in all_categories.items():
         print(category_href)
         # парсим страницу за страницей
         #for page in range(1, int(pages[-5]) + 1):
-        for page in range(1, 12):
+        for page in range(2, 3):
             # парсим все категории
             #responce = requests.get(f'{category_href}&PAGEN_1={page}', headers=headers).text
             # парсим выбранную категорию
-            responce = requests.get(f'https://eldvor.ru/electronics/aksessuary-k-smartfonam-planshetam/?av=v_nalichii&av=pod_zakaz&PAGEN_1={page}', headers=headers).text
+            responce = requests.get(f'https://eldvor.ru/electronics/melkaya-bytovaya-tehnika/?av=v_nalichii&av=pod_zakaz&PAGEN_1={page}', headers=headers).text
 
             soup = BeautifulSoup(responce, 'lxml')
             items = soup.find('div', class_='table_cell_top content-goods-cell').find_all('div', class_='b-goods-item')
@@ -118,18 +120,34 @@ for category_name, category_href in all_categories.items():
                 #print(download_storage)
                 download_soup = BeautifulSoup(download_storage, 'lxml')
                 download_block = download_soup.find('div', class_='product__images')
-                result_link = download_block.find('a', class_='m-lightbox').get('href')
-                #print(result_link)
+
+                # если нет изображения у позиции (нет ссылки на нее) то записываем название позиции в txt файл
+                try:
+                    result_link = download_block.find('a', class_='m-lightbox').get('href')
+                    #print(result_link)
+                except AttributeError:
+                    print(f'позиция {image_name} не имеет изображения')
+                    with open(f'no_image/not_a_image.txt', 'a') as file:
+                        file.write(f'{image_name} не емеет фото\n')
+                    continue
+                    print(f'Изображение со страницы {page} с названием {image_name}" - успешно скачано!')
 
                 # получаем изображение
                 image_bytes = requests.get(f'{link}{result_link}').content
-                sleep(random.randrange(1, 3))
+                #sleep(random.randrange(1, 3))
+                #time.sleep(2)
 
-                #сохраняем наше полученное изображение
-                with open(f'image/{image_name}.jpg', 'wb') as file:
-                    file.write(image_bytes)
-                print(f'Изображение со страницы {page} с названием {image_name}" - успешно скачано!')
+                if os.path.exists(f"image/{image_name}.jpg"):
+                    print("Это изображение уже скачено")
+                    continue
+                else:
 
+
+                    #сохраняем наше полученное изображение
+                    with open(f'image/{image_name}.jpg', 'wb') as file:
+                        file.write(image_bytes)
+                    print(f'Изображение со страницы {page} с названием {image_name}" - успешно скачано!')
+                    time.sleep(1)
             # добавляем задержку между страницами
             sleep(random.randrange(2, 3))
             page += 1
@@ -142,8 +160,8 @@ for category_name, category_href in all_categories.items():
         # df.to_excel(writer, 'Sheet1')
         # writer.save()
 
-        exel_count += 1
-        category_count += 1
+        # exel_count += 1
+        # category_count += 1
 
         # добавляем задержку между разделами
         sleep(random.randrange(4, 8))
