@@ -71,7 +71,7 @@ for category_name, category_href in all_categories.items():
         #req = requests.get(url=category_href, headers=headers)
 
         # для определенного раздела
-        req = requests.get('https://eldvor.ru/electronics/melkaya-bytovaya-tehnika/?av=v_nalichii&av=pod_zakaz', headers=headers)
+        req = requests.get('https://eldvor.ru/electronics/diski-opticheskie-aksessuary/?av=v_nalichii&av=pod_zakaz', headers=headers)
         src = req.text
         # print(src)
         # with open(f'data/{category_count}_{category_name}.html', 'w', encoding='utf-8') as file:
@@ -92,12 +92,12 @@ for category_name, category_href in all_categories.items():
         print(pages[-5])
         print(category_href)
         # парсим страницу за страницей
-        #for page in range(1, int(pages[-5]) + 1):
-        for page in range(2, 3):
+        for page in range(1, int(pages[-5]) + 1):
+        #for page in range(2, 3):
             # парсим все категории
             #responce = requests.get(f'{category_href}&PAGEN_1={page}', headers=headers).text
             # парсим выбранную категорию
-            responce = requests.get(f'https://eldvor.ru/electronics/melkaya-bytovaya-tehnika/?av=v_nalichii&av=pod_zakaz&PAGEN_1={page}', headers=headers).text
+            responce = requests.get(f'https://eldvor.ru/electronics/diski-opticheskie-aksessuary/?av=v_nalichii&av=pod_zakaz&PAGEN_1={page}', headers=headers).text
 
             soup = BeautifulSoup(responce, 'lxml')
             items = soup.find('div', class_='table_cell_top content-goods-cell').find_all('div', class_='b-goods-item')
@@ -128,7 +128,7 @@ for category_name, category_href in all_categories.items():
                 except AttributeError:
                     print(f'позиция {image_name} не имеет изображения')
                     with open(f'no_image/not_a_image.txt', 'a') as file:
-                        file.write(f'{image_name} не емеет фото\n')
+                        file.write(f'{image_name}\n')
                     continue
                     print(f'Изображение со страницы {page} с названием {image_name}" - успешно скачано!')
 
@@ -137,14 +137,17 @@ for category_name, category_href in all_categories.items():
                 #sleep(random.randrange(1, 3))
                 #time.sleep(2)
 
-                if os.path.exists(f"image/{image_name}.jpg"):
+
+                if os.path.exists(f"D:/data/{image_name}.jpg"):
+                #if os.path.exists(f"image/{image_name}.jpg"):
                     print("Это изображение уже скачено")
                     continue
                 else:
 
 
                     #сохраняем наше полученное изображение
-                    with open(f'image/{image_name}.jpg', 'wb') as file:
+                    with open(f'D:/data/{image_name}.jpg', 'wb') as file:
+                    #with open(f'image/{image_name}.jpg', 'wb') as file:
                         file.write(image_bytes)
                     print(f'Изображение со страницы {page} с названием {image_name}" - успешно скачано!')
                     time.sleep(1)
