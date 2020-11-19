@@ -97,7 +97,7 @@ for category_name, category_href in all_categories.items():
         #for page in range(1, int(pages[-5]) + 1):
 
         # парсим выбранный диапазон
-        for page in range(4, 5):
+        for page in range(1, 5):
 
             # парсим все категории
             #responce = requests.get(f'{category_href}&PAGEN_1={page}', headers=headers).text
@@ -122,6 +122,8 @@ for category_name, category_href in all_categories.items():
 
                 # проверка если дисконект с сайтом, надо попробывать цикл while "пока не выполнится код повторять выполнение"
                 # попробывать while за проверку взять количество позиций на странице и счетчик этих позиций
+
+                #while True:
                 try:
 
                     image_link = image.find('a', class_='b-goods-item-img').get('href')
@@ -143,6 +145,7 @@ for category_name, category_href in all_categories.items():
                         continue
                     #print(f'Изображение со страницы {page} с названием {image_name}" - успешно скачано!')
 
+
                     # получаем изображение
                     image_bytes = requests.get(f'{link}{result_link}').content
                     #sleep(random.randrange(1, 3))
@@ -152,7 +155,7 @@ for category_name, category_href in all_categories.items():
                     if os.path.exists(f"D:/data/{image_name}.jpg"):
                     #if os.path.exists(f"image/{image_name}.jpg"):
                         print(f"Это {image_name} изображение уже скачено ({image_count_on_page} из {len(items)} на странице)")
-                        time.sleep(1)
+                        #time.sleep(1)
                         image_count_on_page += 1
                         continue
                     else:
@@ -161,20 +164,19 @@ for category_name, category_href in all_categories.items():
                         #with open(f'image/{image_name}.jpg', 'wb') as file:
                             file.write(image_bytes)
                         print(f'Изображение {image_name}" - успешно скачано! ({image_count_on_page} из {len(items)} на странице)')
-                        sleep(random.randrange(2, 6))
+                        #sleep(random.randrange(2, 6))
                         #time.sleep(1)
                     image_count_on_page += 1
-
-
+                    #break
                 except Exception as ex:
-                    print(f' {ex} Ошибка соединения...')
+                    print(f' {ex} Ошибка соединения c .{image_name}..')
                     # pause = time.sleep(30)
                     for sec in range(1, 31):
                         time.sleep(1)
                         print(f'запустится через {sec}...')
 
 
-                    #continue
+                #continue
 
             # добавляем задержку между страницами
             sleep(random.randrange(2, 4))
