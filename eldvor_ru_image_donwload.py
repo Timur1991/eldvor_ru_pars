@@ -54,12 +54,12 @@ category_count = 1
 count = 0
 
 for category_name, category_href in all_categories.items():
-
+    if category_count == 1:
         # для всех разделов
         #req = requests.get(url=category_href, headers=headers)
 
         # для определенного раздела
-        req = requests.get('https://eldvor.ru/electronics/tovary-dlya-avto/?av=v_nalichii&av=pod_zakaz', headers=headers)
+        req = requests.get('https://eldvor.ru/electronics/pribory-ucheta/?av=v_nalichii', headers=headers)
         src = req.text
 
         # получаем количество страниц в разделе
@@ -77,13 +77,13 @@ for category_name, category_href in all_categories.items():
         #for page in range(1, int(pages[-5]) + 1):
 
         # парсим выбранный диапазон
-        for page in range(1, 5):
+        for page in range(1, 2):
 
             # парсим все категории
             #responce = requests.get(f'{category_href}&PAGEN_1={page}', headers=headers).text
 
             # парсим выбранную категорию (ссылку берем в json файле)
-            responce = requests.get(f'https://eldvor.ru/electronics/tovary-dlya-avto/?av=v_nalichii&av=pod_zakaz&PAGEN_1={page}', headers=headers).text
+            responce = requests.get(f'https://eldvor.ru/electronics/pribory-ucheta/?av=v_nalichii&PAGEN_1={page}', headers=headers).text
 
             soup = BeautifulSoup(responce, 'lxml')
             items = soup.find('div', class_='table_cell_top content-goods-cell').find_all('div', class_='b-goods-item')
@@ -121,7 +121,7 @@ for category_name, category_href in all_categories.items():
                                 time.sleep(1)
                                 print(f'запустится через {sec}...')
 
-                    if os.path.exists(f"D:/data/{image_name}.jpg"):
+                    if os.path.exists(f"image/{image_name}.jpg"):
                     #if os.path.exists(f"image/{image_name}.jpg"):
                         print(f"Это {image_name} изображение уже скачено ({image_count_on_page} из {len(items)} на странице)")
                         #time.sleep(1)
@@ -139,5 +139,6 @@ for category_name, category_href in all_categories.items():
             # добавляем задержку между страницами
             sleep(random.randrange(2, 4))
             page += 1
-        sleep(random.randrange(4, 8))
+        category_count += 1
+        #sleep(random.randrange(4, 8))
 
