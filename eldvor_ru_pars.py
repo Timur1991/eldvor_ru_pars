@@ -81,6 +81,7 @@ for category_name, category_href in all_categories.items():
         # with open(f'data/{category_count}_{category_name}.html', encoding='utf-8') as file:
         #     scr = file.read()
 
+
         # получаем количество страниц в разделе
         page = 1
         soup = BeautifulSoup(src, 'html.parser')
@@ -91,9 +92,9 @@ for category_name, category_href in all_categories.items():
         else:
             pages = 1
         print(pages[-5])
-        print(category_href)
+        #print(category_href)
 
-        #парсим страницу за страницей
+        # парсим страницу за страницей
         #for page in range(1, int(pages[-5]) + 1):
 
         # парсим выбранный диапазон
@@ -124,7 +125,7 @@ for category_name, category_href in all_categories.items():
                 # попробывать while за проверку взять количество позиций на странице и счетчик этих позиций
 
                 #while True:
-                try:
+                #try:
 
                     image_link = image.find('a', class_='b-goods-item-img').get('href')
                     image_name = image.find('div', class_='info-a').get_text(strip=True).split(' ')[-1]
@@ -144,12 +145,19 @@ for category_name, category_href in all_categories.items():
                             file.write(f'{link}{image_link} \n')
                         continue
                     #print(f'Изображение со страницы {page} с названием {image_name}" - успешно скачано!')
-
-
-                    # получаем изображение
-                    image_bytes = requests.get(f'{link}{result_link}').content
-                    #sleep(random.randrange(1, 3))
-                    #time.sleep(2)
+                    while True:
+                        try:
+                            # получаем изображение
+                            image_bytes = requests.get(f'{link}{result_link}').content
+                            #sleep(random.randrange(1, 3))
+                            #time.sleep(2)
+                            break
+                        except Exception as ex:
+                            print(f' {ex} Ошибка соединения c .{image_name}..')
+                            # pause = time.sleep(30)
+                            for sec in range(1, 31):
+                                time.sleep(1)
+                                print(f'запустится через {sec}...')
 
 
                     if os.path.exists(f"D:/data/{image_name}.jpg"):
@@ -168,12 +176,12 @@ for category_name, category_href in all_categories.items():
                         #time.sleep(1)
                     image_count_on_page += 1
                     #break
-                except Exception as ex:
-                    print(f' {ex} Ошибка соединения c .{image_name}..')
-                    # pause = time.sleep(30)
-                    for sec in range(1, 31):
-                        time.sleep(1)
-                        print(f'запустится через {sec}...')
+                # except Exception as ex:
+                #     print(f' {ex} Ошибка соединения c .{image_name}..')
+                #     # pause = time.sleep(30)
+                #     for sec in range(1, 31):
+                #         time.sleep(1)
+                #         print(f'запустится через {sec}...')
 
 
                 #continue
